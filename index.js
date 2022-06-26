@@ -48,7 +48,9 @@ app.get("/questions/:id", (request, result) =>{
     where:{id: id}
   }).then(questions => {
     if(questions != undefined) {
-      result.render("questions");
+      result.render("questions", {
+        questions:questions
+      });
     } else{
       result.redirect("/");
     }
