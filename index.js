@@ -17,8 +17,11 @@ app.use (express.static ('public'));
 require('dotenv').config()
 
 app.get('/', (request, result) => {
-    formAskModel.findAll({raw:true}).then (showAll => {
-      result.send(`<h2>${showAll}</h2>`)
+    formAskModel.findAll({raw:true, order:[['id','DESC']]}).then (showAll => {
+    //  console.log(showAll);
+      result.render("index", {
+        showAll:showAll,
+      });
     });
   });
 
@@ -38,6 +41,20 @@ app.post('/saveAsk', (request, result) =>{
         result.redirect("/");
   })
 });
+
+app.get("/questions/:id", (request, result) =>{
+  let id = request.params.id;
+  formAskModel.findOne({
+    where:{id: id}
+  }).then(questions => {
+    if(questions != undefined) {
+      result.render("questions");
+    } else{
+      result.redirect("/");
+    }
+  });
+});
+
   
 
 app.listen (port, (function (erro) {
