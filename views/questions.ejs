@@ -1,15 +1,31 @@
 <%- include('partials/header'); %>
 
     <body>
-
         <%- include('partials/navbar'); %>
+
             <div class="container">
                 <h1>
                     <%=questions.title%>
                 </h1>
                 <hr>
-                <%=questions.description%>
-                    <hr>
+                <p>
+                    <%=questions.description%>
+                </p>
+                <hr>
+                <form method="POST" action="/questions">
+                    <h3>Insert your answer below</h3>
+                    <br>
+                    <textarea placeholder="Insert your answer here!" name="bodyText" class="form-control"></textarea>
+                    <input type="hidden" name="answerId" value="<%= questions.id %>">
+                    <br>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <hr>
+                <h3>Answers for this question</h3>
+                <hr>
+                <% showAnswers.forEach(showAnswer=>{%>
+                    <%= showAnswer.bodyAnswer %><br>
+                        <% })%>
 
             </div>
     </body>

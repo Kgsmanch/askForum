@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const conn = require("./database/db")
 const formAskModel = require('./database/FormAsk');
 const { text } = require("body-parser");
+const answerModel = require('./database/Answers');
+const { response } = require("express");
 
 // DECODIFICA OS DADOS ENVIADOS PELO FORMULARIO PARA LINGUAGEM JS
 app.use(bodyParser.urlencoded({extended:false}));
@@ -13,7 +15,8 @@ app.use(bodyParser.json());
 
 // METHODO EXPRESS PARA MUDAR A VIEW ENGINE PARA EJS
 app.set('view engine', 'ejs');
-app.use (express.static ('public'));
+app.use (express.static('public'));
+
 require('dotenv').config()
 
 app.get('/', (request, result) => {
@@ -48,16 +51,36 @@ app.get("/questions/:id", (request, result) =>{
     where:{id: id}
   }).then(questions => {
     if(questions != undefined) {
-      result.render("questions", {
-        questions:questions
-      });
+
+      answerModel.findAll({
+        where: {questionId:id},
+        order: [
+          ['id', 'DESC']
+        ]
+      }).then(showAnswers => {
+        result.render("questions", {
+          questions:questions,
+          showAnswers:showAnswers
+        })
+      })
     } else{
       result.redirect("/");
     }
   });
 });
 
-  
+app.post("/questions", (request, result) => {
+  let bodyText = request.body.bodyText;
+  let answerId = request.body.answerId;
+
+  answerModel.create({
+    bodyAnswer:bodyText,
+    questionId:answerId,
+  })
+  .then(() => {
+    result.redirect("/questions/"+answerId);
+  })
+})
 
 app.listen (port, (function (erro) {
     if (erro) {
